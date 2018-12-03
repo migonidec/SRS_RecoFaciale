@@ -1,0 +1,20 @@
+
+
+//Explication du code
+
+//Modification 
+//Changer noyau SVC (SVM) 
+//Param PCA
+//Utilisation d'autres classifiers (Neireights neighboud / Random Forest)
+
+//Outils d'evaluation 
+//ROC / courbe rappel-précision
+
+
+RESIZE 0,2
+                           precision    recall  f1-score   support
+              avg / total       0.64      0.63      0.61       647
+
+RESIZE 0,9			  
+                           precision    recall  f1-score   support
+              avg / total       0.62      0.62      0.60       647
