@@ -14,11 +14,13 @@ Lors de l'importation des données, il est possible de jouer sur 2 paramètres p
 lfw_people = fetch_lfw_people(min_faces_per_person=10, resize=0.9, data_home=".")
 ```
 
-| Faces per person| # of personns | n_components |  Average accuracy | Time |
-| --------------- | ------------- | -------------| ----------------- | ---- |
-| 10              | 158           | 100          |                   |      |
-| 35              |               | 100          |                   |      |
-| 60              |               | 100          |                   |      |
+| Faces per person| # of personns | n_components |  Average accuracy | Time (s) |
+| --------------- | ------------- | -------------| ----------------- | -------- |
+| 10              | 158           | 100          | 0.480             | 4553     |
+| 35              | 24            | 100          | 0.743             | 717      |
+| 60              | 8             | 100          | 0.828             | 203      |
+
+Naturellement, on remarque que *plus le nombre d'images par classe est élevé, plus la précision de la prédiction est bonne*. 
 
 #### Redimentionnement des images sources
 D'après nos tests, le redimmentionnement des images n'a pas beaucoup d'influence sur la précision de notre prédiction. Nous allons donc conserver le paramètre basique de 0,9. 
@@ -35,3 +37,11 @@ y = lfw_people.target
 target_names = lfw_people.target_names
 n_classes = target_names.shape[0]
 ``` 
+
+### Prétraitement des données
+Les données vont ensuite subire une série de prétraitement avat d'être transmise aux algorithmes d'apprentissage.
+On va premièrement séparer notre ensemble en 2 : une sample de d'entraiement et un sample de test. Ce dernier permettra de valider les performance de notre entrainement. 
+On définit ensuite un nombre de composantes (eigenfaces) à extraire de nos classes pour pouvoir entrainer notre modèle.
+
+
+
