@@ -4,9 +4,9 @@ Dans le cadre de l'UV SRS à l'IMT Lille Douai (ex Telecom Lille), nous avons eu
 Nous allons utiliser le code fourni par la biobliotèque [scikit-learn](https://scikit-learn.org/stable/auto_examples/applications/plot_face_recognition.html#sphx-glr-auto-examples-applications-plot-face-recognition-py) et nous allons analyser son fonctionnement afin de l'améliorer.
 
 ## Index
-**[Analyse du fonctionnement](#analyse-du-fonctionnement)**
-	[Recupération des données](#recupération-des-données)
-	[Prétraitement des données](#Prétraitement-des-données)
+**[Analyse du fonctionnement](#analyse-du-fonctionnement)**<\br>
+	[Recupération des données](#recupération-des-données)<\br>
+	[Prétraitement des données](#Prétraitement-des-données)<\br>
 
 
 ## Analyse du fonctionnement
@@ -52,7 +52,7 @@ On définit ensuite un nombre de composantes (eigenfaces) à extraire de nos cla
 Par défault, la fonction `sklearn.model_selection.train_test_split` mélange l'ensemble du dataset avant de le séparer. Nous allons garder ce mélange en conservant la même graine aléatoire entre chaque essai.
 
 | Faces per person | n_components | test %      | Average accuracy | Time (s) |
-| ---------------- | ------------ | ------------| ---------------- | -------- |
+| ---------------- | ------------ | ----------- | ---------------- | -------- |
 | 35               | 200          | 10          | 0.782            | 1028     |
 | 35               | 200          | 18          | 0.773            | !460!    |
 | 35               | 200          | 25          | 0.728            | 606      |
@@ -64,8 +64,9 @@ On fixe le pourcentage de test à 18 `X_train, X_test, y_train, y_test = train_t
 
 #### Nombre de composantes
 Le nombre de composantes correspond au nombre de filtre (eigenfaces) que nous allons appliquer pour prédire l'identité d'une personne. Nous allons faire varier ce nombre de filtres afin d'évaluer leur impact.
+
 | Faces per person | n_components | test %      | Average accuracy | Time (s) |
-| ---------------- | ------------ | ------------| ---------------- | -------- |
+| ---------------- | ------------ | ----------- | ---------------- | -------- |
 | 35               | 50           | 18          | 0.722            | 102      |
 | 35               | 100          | 18          | 0.789            | 229      |
 | 35               | 150          | 18          | 0.751            | 342      |
