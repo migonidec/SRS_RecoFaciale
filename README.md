@@ -6,22 +6,20 @@ Nous allons utiliser le code fourni par la biobliotèque [scikit-learn](https://
 ## TODO
 - [ ] Implementation de courbe ROC
 - [ ] Implementation de courbe rappel-précision
-- [ ] Changement de noyau analyse
-- [ ] Utilisation d'autres classifiers (Neireights neighboud / Random Forest)
+- [ ] Nearest Neighbour définition
+- [ ] Utilisation Random Forest
 
 ## Index
 + **[Analyse de RecoFaciale](#analyse-de-RecoFaciale)**
 	- [Recupération des données](#recupération-des-données) 
 	- [Prétraitement des données](#prétraitement-des-données)
 	- [Classificateur](#classificateur)
+		- [Définition de SVM](#définition-de-SVM)
+		- [Implémentation](#implémentation)
 	- [Test de validation](#test-de-validation)
-
-## Définition de SVM
-Les machines à vecteurs de support sont des techniques d'apprentissage supervisé qui permettent de classifier des données de grandes dimensions. Les SVMs sont donc adaptés pour traiter des données tel que les visages.
-Le fonctionnement des SVM est défini en fonction de 2 paramètres : un noyau (*kernel*) et une marge maximale (*soft margin*).
-* Kernel. Cet élément permet de résoudre des problèmes linéairement non séparables. Il semble qu'il n'existe pas de méthode deterministe pour choisir un kernel, cependant il est possible de determiner le bon kernel de manière empirique (cross-validation). 
-Enfin, le kernel peut être configuré en utlisant un paramètre &gamma;. Ce paramètre sera configuré de manière empirique, cependant il est de fournir un ensemble de valeurs croissantes exponentiellement ([doc](https://en.wikibooks.org/wiki/Support_Vector_Machines))
-* Soft Margin. De la même manière que &gamma;, il est conseillé de fournir un ensembles de valeurs croissantes exponentiellement.
++ **[Classificateur Nearest Neighbour](#classificateur-nearest-neighbour)
+	- [Définition](#définition)
+	- [Implémentation](#implémentation)
 
 
 ## Analyse de RecoFaciale
@@ -104,6 +102,15 @@ X_test_pca = pca.transform(X_test)
 ```
 
 ### Classificateur
+
+#### Définition de SVM
+Les machines à vecteurs de support sont des techniques d'apprentissage supervisé qui permettent de classifier des données de grandes dimensions. Les SVMs sont donc adaptés pour traiter des données tel que les visages.
+Le fonctionnement des SVM est défini en fonction de 2 paramètres : un noyau (*kernel*) et une marge maximale (*soft margin*).
+* Kernel. Cet élément permet de résoudre des problèmes linéairement non séparables. Il semble qu'il n'existe pas de méthode deterministe pour choisir un kernel, cependant il est possible de determiner le bon kernel de manière empirique (cross-validation). 
+Enfin, le kernel peut être configuré en utlisant un paramètre &gamma;. Ce paramètre sera configuré de manière empirique, cependant il est de fournir un ensemble de valeurs croissantes exponentiellement ([doc](https://en.wikibooks.org/wiki/Support_Vector_Machines))
+* Soft Margin. De la même manière que &gamma;, il est conseillé de fournir un ensembles de valeurs croissantes exponentiellement.
+
+#### Implémentation
 Voici le code remanié du code original, cela pour plus de clareté
 ```
 K_param = 'rbf'
@@ -120,8 +127,9 @@ En regardant la documentation, on peux voir que les paramètres `G_param` et `C_
 
 Par la suite à fera varier ces paramètres, et notamment `K_param` afin d'étudier le fonctionnement de SVM.
 
-#### Lineaire
-Ce kernel est le plus simple, c'est donc le moins consommateur en ressource. 
+##### Lineaire
+Ce kernel est le plus simple, c'est donc le moins consommateur en ressource.
+
 | Kernel | Faces per person | n_components | test %      | Average accuracy | Time (s) |
 | ------ | ---------------- | ------------ | ----------- | ---------------- | -------- |
 | linear | 35               | 50           | 18          | 0.651            | 1286     |
@@ -131,7 +139,7 @@ Ce kernel est le plus simple, c'est donc le moins consommateur en ressource.
 
 Cependant on remarque que lorsque le kernel linéaire travail avec peu de composantes, les performances sont très largement dégradées.
 
-#### Polynomial
+##### Polynomial
 
 | Kernel | Faces per person | n_components | test %      | Average accuracy | Time (s) |
 | ------ | ---------------- | ------------ | ----------- | ---------------- | -------- |
@@ -142,7 +150,7 @@ Cependant on remarque que lorsque le kernel linéaire travail avec peu de compos
 Pour une raison inconue, nous n'arrivons pas à obtenir des resultats probant avec ce noyau. Même en jouant sur 2 facteurs optionnels (`coef0` et `degree`), il nous est impossible de dépasser une précision de 0,7.
 De plus, on remarque que les performances diminuent avec le nombre de filtres appliqués. On peux conclure que ce kernel n'est pas l'option adaptée pour ce cas d'usage.
 
-#### Radial Basis Function
+##### Radial Basis Function
 
 | Kernel | Faces per person | n_components | test %      | Average accuracy | Time (s) |
 | ------ | ---------------- | ------------ | ----------- | ---------------- | -------- |
@@ -157,6 +165,34 @@ Pour notre cas d'usage on peux voir que c'est le noyau `rbf` qui obtiens les mei
 Pour évaluer la pertinence de notre modèle, on utilise une matrice de confusion grâce à la fonction `confusion_matrix`. A noter que la fonction `classification_report` permet d'extraire des métriques plus compactes que la matrice de confusion, mais que toutes les données sont explicités dans la matrice.
 
 Dans notre cas il est pertinent d'implémenter une courbe ROC et une courbe rappel-précision. 
+
+## Classificateur Nearest Neighbour
+
+### Définition
+
+
+### Implémentation
+```
+neigh = KNeighborsClassifier(n_neighbors=10)
+clf = neigh.fit(X_train_pca, y_train)
+y_pred = clf.predict(X_test_pca)
+print("Average accuracy %0.3f" % accuracy_score(y_test, y_pred))
+```
+Il est possible de paramétrer l'object `KNeighborsClassifier` avec plusieurs options, notamment avec `n_neighbors` ou `weights` et `algorithm`. Nous allons succéssivement tester ces paramètres afin de retenir la meilleure configuration. 
+
+| n_neighbors | weights  | algorithm |  Average accuracy |
+| ----------- | -------- | --------- | ----------------- |
+| 3           | default  | default   | 0.530             |
+| 5           | default  | default   | 0.565             |
+| 10          | default  | default   | 0.543             |
+| 50          | default  | default   | 0.373             |
+| 5           | uniform  | default   | 0.570             |
+| 5           | distance | default   | 0.580             |
+| 5           | distance | ball_tree | 0.581             |
+| 5           | distance | kd_tree   | 0.573             |
+| 5           | distance | brute     | 0.584             |
+
+Grâce à ce tableau de comparaison on peux voir que la combinaison de paramètres la plus performante est `KNeighborsClassifier(n_neighbors=10, weights='distance', algorithm='ball_tree')`.
 
 ## Documentation
 + https://scikit-learn.org/stable/modules/grid_search.html
