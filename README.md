@@ -10,7 +10,7 @@ Nous allons utiliser le code fourni par la biobliotèque [scikit-learn](https://
 - [ ] Utilisation d'autres classifiers (Neireights neighboud / Random Forest)
 
 ## Index
-+ **[Analyse du fonctionnement](#analyse-du-fonctionnement)**
++ **[Analyse de RecoFaciale](#analyse-de-RecoFaciale)**
 	- [Recupération des données](#recupération-des-données) 
 	- [Prétraitement des données](#prétraitement-des-données)
 	- [Classificateur](#classificateur)
@@ -24,8 +24,7 @@ Enfin, le kernel peut être configuré en utlisant un paramètre &gamma;. Ce par
 * Soft Margin. De la même manière que &gamma;, il est conseillé de fournir un ensembles de valeurs croissantes exponentiellement.
 
 
-
-## Analyse du fonctionnement
+## Analyse de RecoFaciale
 
 ### Recupération des données
 La première étape du programme est la récupération des données. Ces données proviennent de la base données [Labeled Faces in the Wild](http://vis-www.cs.umass.edu/lfw/).
@@ -121,11 +120,46 @@ En regardant la documentation, on peux voir que les paramètres `G_param` et `C_
 
 Par la suite à fera varier ces paramètres, et notamment `K_param` afin d'étudier le fonctionnement de SVM.
 
+#### Lineaire
+Ce kernel est le plus simple, c'est donc le moins consommateur en ressource. 
+| Kernel | Faces per person | n_components | test %      | Average accuracy | Time (s) |
+| ------ | ---------------- | ------------ | ----------- | ---------------- | -------- |
+| linear | 35               | 50           | 18          | 0.651            | 1286     |
+| linear | 35               | 100          | 18          | 0.700            | 219      |
+| linear | 35               | 150          | 18          | 0.714            | 467      |
+| linear | 35               | 200          | 18          | 0.735            | 601      |
+
+Cependant on remarque que lorsque le kernel linéaire travail avec peu de composantes, les performances sont très largement dégradées.
+
+#### Polynomial
+
+| Kernel | Faces per person | n_components | test %      | Average accuracy | Time (s) |
+| ------ | ---------------- | ------------ | ----------- | ---------------- | -------- |
+| poly   | 35               | 100          | 18          | 0.473            | 265      |
+| poly   | 35               | 150          | 18          | 0.378            | 442      |
+| poly   | 35               | 200          | 18          | 0.319            | 854       |
+
+Pour une raison inconue, nous n'arrivons pas à obtenir des resultats probant avec ce noyau. Même en jouant sur 2 facteurs optionnels (`coef0` et `degree`), il nous est impossible de dépasser une précision de 0,7.
+De plus, on remarque que les performances diminuent avec le nombre de filtres appliqués. On peux conclure que ce kernel n'est pas l'option adaptée pour ce cas d'usage.
+
+#### Radial Basis Function
+
+| Kernel | Faces per person | n_components | test %      | Average accuracy | Time (s) |
+| ------ | ---------------- | ------------ | ----------- | ---------------- | -------- |
+| rbf    | 35               | 50           | 18          | 0.722            | 102      |
+| rbf    | 35               | 100          | 18          | 0.789            | 229      |
+| rbf    | 35               | 150          | 18          | 0.751            | 342      |
+| rbf    | 35               | 200          | 18          | 0.768            | 506      |
+
+Pour notre cas d'usage on peux voir que c'est le noyau `rbf` qui obtiens les meilleurs performances.
+
 ### Test de validation
 Pour évaluer la pertinence de notre modèle, on utilise une matrice de confusion grâce à la fonction `confusion_matrix`. A noter que la fonction `classification_report` permet d'extraire des métriques plus compactes que la matrice de confusion, mais que toutes les données sont explicités dans la matrice.
+
 Dans notre cas il est pertinent d'implémenter une courbe ROC et une courbe rappel-précision. 
 
 ## Documentation
++ https://scikit-learn.org/stable/modules/grid_search.html
 + https://en.wikibooks.org/wiki/Support_Vector_Machines
 + https://scikit-learn.org/stable/auto_examples/svm/plot_rbf_parameters.html
 
