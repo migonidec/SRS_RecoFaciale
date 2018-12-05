@@ -3,11 +3,18 @@
 Dans le cadre de l'UV SRS à l'IMT Lille Douai (ex Telecom Lille), nous avons eu l'occasion de nous inicier à l'analyse biométrique basée sur l'IA.
 Nous allons utiliser le code fourni par la biobliotèque [scikit-learn](https://scikit-learn.org/stable/auto_examples/applications/plot_face_recognition.html#sphx-glr-auto-examples-applications-plot-face-recognition-py) et nous allons analyser son fonctionnement afin de l'améliorer.
 
+## TODO
+- [ ] Implementation de courbe ROC
+- [ ] Implementation de courbe rappel-précision
+- [ ] Changement de noyau analyse
+- [ ] Utilisation d'autres classifiers (Neireights neighboud / Random Forest)
+
 ## Index
-1. **[Analyse du fonctionnement](#analyse-du-fonctionnement)**
-1.1 [Recupération des données](#recupération-des-données)
-1.2 [Prétraitement des données](#Prétraitement-des-données)
-1.3 [Classificateur](#Classificateur)
++ **[Analyse du fonctionnement](#analyse-du-fonctionnement)**
+	- [Recupération des données](#recupération-des-données) 
+	- [Prétraitement des données](#prétraitement-des-données)
+	- [Classificateur](#classificateur)
+	- [Test de validation](#test-de-validation)
 
 ## Définition de SVM
 Les machines à vecteurs de support sont des techniques d'apprentissage supervisé qui permettent de classifier des données de grandes dimensions. Les SVMs sont donc adaptés pour traiter des données tel que les visages.
@@ -98,13 +105,11 @@ X_test_pca = pca.transform(X_test)
 ```
 
 ### Classificateur
-
-#### Support Vector Machines (SVM)
-Voici le code remanié du code origial, cela pour plus de clareté
+Voici le code remanié du code original, cela pour plus de clareté
 ```
 K_param = 'rbf'
-G_param = np.logspace(0, 1, 100)
-C_param = np.logspace(0, 1, 100)
+G_param = [1e-3, 1e-2, 1e-1, 1, 1e1, 1e2, 1e3, 5e3, 1e4, 5e4, 1e5]
+C_param = [0.0001, 0.0005, 0.001, 0.005, 0.01, 0.1]
 
 param_grid = {'C': C_param, 'gamma': G_param, }
 svc = SVC(kernel=K_param, probability=True)
@@ -116,9 +121,12 @@ En regardant la documentation, on peux voir que les paramètres `G_param` et `C_
 
 Par la suite à fera varier ces paramètres, et notamment `K_param` afin d'étudier le fonctionnement de SVM.
 
+### Test de validation
+Pour évaluer la pertinence de notre modèle, on utilise une matrice de confusion grâce à la fonction `confusion_matrix`. A noter que la fonction `classification_report` permet d'extraire des métriques plus compactes que la matrice de confusion, mais que toutes les données sont explicités dans la matrice.
+Dans notre cas il est pertinent d'implémenter une courbe ROC et une courbe rappel-précision. 
 
 ## Documentation
-https://en.wikibooks.org/wiki/Support_Vector_Machines
-https://scikit-learn.org/stable/auto_examples/svm/plot_rbf_parameters.html
++ https://en.wikibooks.org/wiki/Support_Vector_Machines
++ https://scikit-learn.org/stable/auto_examples/svm/plot_rbf_parameters.html
 
 
