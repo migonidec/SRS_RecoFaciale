@@ -193,8 +193,11 @@ Sortie : Le résultat anticipé
 Le choix de la distance calculer est primordial au bon fonctionnement de la méthode. Mais alors, comment choisir la méthode des calculs de distance?Cela dépend forcément du type d’analyse, puisque nous avons le choix entre la:
 
 **- Distance numérique**
+
 **- Distance entre nominaux**
+
 **- Distance Euclidienne**
+
 **- Diverses**
 
 Dans notre cas, on utilisera la distance euclidienne entre les points. Nous présenterons un visage de test et observerons les plus proches visage de tests. Puis, nous allons comptabiliser la majorité des points afin d’en déduire la classe du visage en question.
