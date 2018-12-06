@@ -4,9 +4,14 @@ Dans le cadre de l'UV SRS à l'IMT Lille Douai (ex Telecom Lille), nous avons eu
 Nous allons utiliser le code fourni par la biobliotèque [scikit-learn](https://scikit-learn.org/stable/auto_examples/applications/plot_face_recognition.html#sphx-glr-auto-examples-applications-plot-face-recognition-py) et nous allons analyser son fonctionnement afin de l'améliorer.
 
 ## TODO
+- [x] Structure globale du code 
+- [x] Variation de la proportion de test 
+- [x] Variation du nombre de composantes
+- [x] Variation du kernel SVM
 - [ ] Implementation de courbe ROC
 - [ ] Implementation de courbe rappel-précision
 - [ ] Nearest Neighbour définition
+- [x] Implémentation KNN
 - [ ] Utilisation Random Forest
 
 ## Index
@@ -17,12 +22,16 @@ Nous allons utiliser le code fourni par la biobliotèque [scikit-learn](https://
 		- [Définition de SVM](#définition-de-SVM)
 		- [Implémentation](#implémentation)
 	- [Test de validation](#test-de-validation)
-+ **[Classificateur Nearest Neighbour](#classificateur-nearest-neighbour)
++ **[Classificateur Nearest Neighbour](#classificateur-nearest-neighbour)**	
 	- [Définition](#définition)
 	- [Implémentation](#implémentation)
 
 
 ## Analyse de RecoFaciale
+
+### Workflow général
+
+![alt text](https://raw.githubusercontent.com/migonidec/SRS_RecoFaciale/master/images/global_scheme.png)
 
 ### Recupération des données
 La première étape du programme est la récupération des données. Ces données proviennent de la base données [Labeled Faces in the Wild](http://vis-www.cs.umass.edu/lfw/).
