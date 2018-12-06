@@ -10,9 +10,9 @@ Nous allons utiliser le code fourni par la biobliotèque [scikit-learn](https://
 - [x] Variation du kernel SVM
 - [ ] Implementation de courbe ROC
 - [ ] Implementation de courbe rappel-précision
-- [ ] Nearest Neighbour définition
+- [x] Nearest Neighbour 
 - [x] Implémentation KNN
-- [ ] Utilisation Random Forest
+- [x] Random Forest
 
 ## Index
 + **[Analyse de RecoFaciale](#analyse-de-RecoFaciale)**
@@ -23,6 +23,9 @@ Nous allons utiliser le code fourni par la biobliotèque [scikit-learn](https://
 		- [Implémentation](#implémentation)
 	- [Test de validation](#test-de-validation)
 + **[Classificateur Nearest Neighbour](#classificateur-nearest-neighbour)**	
+	- [Définition](#définition)
+	- [Implémentation](#implémentation)
++ **[Classificateur Random Forest](#classificateur-random-forest)**	
 	- [Définition](#définition)
 	- [Implémentation](#implémentation)
 
