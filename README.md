@@ -1,7 +1,7 @@
 # SRS Projet de reconnaissance facile
 
-Dans le cadre de l'UV SRS à l'IMT Lille Douai (ex Telecom Lille), nous avons eu l'occasion de nous inicier à l'analyse biométrique basée sur l'IA.
-Nous allons utiliser le code fourni par la biobliotèque [scikit-learn](https://scikit-learn.org/stable/auto_examples/applications/plot_face_recognition.html#sphx-glr-auto-examples-applications-plot-face-recognition-py) et nous allons analyser son fonctionnement afin de l'améliorer.
+Dans le cadre de l'UV SRS à l'IMT Lille Douai (ex-Telecom Lille), nous avons eu l'occasion de nous initier à l'analyse biométrique basée sur l'IA.
+Nous allons utiliser le code fourni par la bibliothèque [scikit-learn](https://scikit-learn.org/stable/auto_examples/applications/plot_face_recognition.html#sphx-glr-auto-examples-applications-plot-face-recognition-py) et nous allons analyser son fonctionnement afin de l'améliorer.
 
 ## TODO
 - [x] Structure globale du code 
@@ -11,7 +11,7 @@ Nous allons utiliser le code fourni par la biobliotèque [scikit-learn](https://
 - [ ] Implementation de courbe ROC
 - [ ] Implementation de courbe rappel-précision
 - [x] Nearest Neighbour 
-- [x] Implémentation KNN
+- [x] KNN
 - [x] Random Forest
 
 ## Index
@@ -50,13 +50,13 @@ lfw_people = fetch_lfw_people(min_faces_per_person=10, resize=0.9, data_home="."
 | 35               | 24            | 200          | 0.743             | 717      |
 | 60               | 8             | 200          | 0.828             | 203      |
 
-Naturellement, on remarque que *plus le nombre d'images par classe est élevé, plus la précision de la prédiction est bonne*. 
+Naturellement, on remarque que plus le nombre d'images par classe est élevé, plus la précision de la prédiction est bonne. 
 
 #### Redimentionnement des images sources
 D'après nos tests, le redimmentionnement des images n'a pas beaucoup d'influence sur la précision de notre prédiction. Nous allons donc conserver le paramètre basique de 0,9. 
  
  
-Les étapes suivantes sont destinées à extraires les caractèristiques du data-set que nous avons séléctionnées.
+Les étapes suivantes sont destinées à extraires les caractèristiques du data-set que nous avons séléctionné.
 ```
 n_samples, h, w = lfw_people.images.shape
 
@@ -69,8 +69,8 @@ n_classes = target_names.shape[0]
 ``` 
 
 ### Prétraitement des données
-Les données vont ensuite subire une série de prétraitement avat d'être transmise aux algorithmes d'apprentissage.
-On va premièrement séparer notre ensemble en 2 : une sample de d'entrainement et un sample de test. Ce dernier permettra de valider les performance de notre entrainement. 
+Les données vont ensuite subir une série de prétraitement avant d'être transmises à l'algorithme d'apprentissage.
+On va premièrement séparer notre ensemble en 2 : une sample de d'entrainement et un sample de test. Ce dernier permettra de valider les performances de notre entrainement. 
 On définit ensuite un nombre de composantes (eigenfaces) à extraire de nos classes pour pouvoir entrainer notre modèle.
 
 #### Proportion de test
@@ -83,12 +83,12 @@ Par défault, la fonction `sklearn.model_selection.train_test_split` mélange l'
 | 35               | 200          | 25          | 0.728            | 606      |
 | 35               | 200          | 40          | 0.702            | 571      |
 
-Naturellement, on peux voir que plus la proportion de test augmente moins le model produit sera précis. En effet, cela donne au moteur d'entrainement moins de données pour travailer.
-Il est donc nécéssaire de trouver un juste milieu entre le temps d'apprentissage et l'efficacité des modèles.
-On fixe le pourcentage de test à 18 `X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.18, random_state=42)`
+Naturellement, on peut voir que plus la proportion de test augmente moins le model produit sera précis. En effet, cela donne au moteur d'entrainement moins de données pour travailer.
+Il est donc nécessaire de trouver un juste milieu entre le temps d'apprentissage et l'efficacité des modèles.
+On fixe le pourcentage de test à 18 : `X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.18, random_state=42)`
 
 #### Nombre de composantes
-Le nombre de composantes correspond au nombre de filtre (eigenfaces) que nous allons appliquer pour prédire l'identité d'une personne. Nous allons faire varier ce nombre de filtres afin d'évaluer leur impact.
+Le nombre de composantes correspond au nombre de filtres (eigenfaces) que nous allons appliquer pour prédire l'identité d'une personne. Nous allons faire varier ce nombre de filtres afin d'évaluer leur impact.
 
 | Faces per person | n_components | test %      | Average accuracy | Time (s) |
 | ---------------- | ------------ | ----------- | ---------------- | -------- |
@@ -97,17 +97,17 @@ Le nombre de composantes correspond au nombre de filtre (eigenfaces) que nous al
 | 35               | 150          | 18          | 0.751            | 342      |
 | 35               | 200          | 18          | 0.768            | 506      |
 | 35               | 250          | 18          | 0.746            | 625      |
+	
+On peut remarquer que le nombre de filtres joue fortement sur la précision du model. Cependant, à partir d'un certain nombre les performances baissent fortement. En effet, théoriquement les premières eigenfaces portent les informations principales puis la quantité d'informations décroit. On peut donc assimiler les eigenfaces d'indice élevé comme du bruit pour notre analyse.
+On fixera un nombre de eigenfaces à 100 pour des questions de performances temporelles et de précision : `n_components = 100`.
 
-On peux remarquer le nombre de filtre joue fortement sur la précision du model. Cependant, à partir d'un certain nombre les performance baissent fortement. En effet, théoriquement les premières eigenfaces portent les informations principales puis la quantité d'information décrois. On peux donc assimiler les eigenfaces d'indice elevé comme du bruit pour notre analyse.
-On fixera un nombre de eigenfaces à 100 pour des questions de performance temporelles et de précision : `n_components = 100`.
-
-#### Reduction de dimension
+#### Réduction de dimension
 Grâce à la librairie `sklearn`, on peut facilement générer des eigenfaces et les adapter au dataset d'entrainement.
 ```
 pca = PCA(n_components=n_components, svd_solver='randomized', whiten=True) #model creation
 pca.fit(X_train) #fit model to the training dataset
 ```
-L'analyse en composante principale (PCA) va permettre de diminuer le nombre de dimension d'analyse au nombre d'eigenfaces. Il va donc falloir adapter nos 2 datasets (train et test) à nos PCA.
+L'analyse en composante principale (PCA) va permettre de diminuer le nombre de dimensions d'analyse au nombre d'eigenfaces. Il va donc falloir adapter nos 2 datasets (train et test) à nos PCA.
 ```
 X_train_pca = pca.transform(X_train)
 X_test_pca = pca.transform(X_test)
@@ -116,11 +116,11 @@ X_test_pca = pca.transform(X_test)
 ### Classificateur
 
 #### Définition de SVM
-Les machines à vecteurs de support sont des techniques d'apprentissage supervisé qui permettent de classifier des données de grandes dimensions. Les SVMs sont donc adaptés pour traiter des données tel que les visages.
+Les machines à vecteurs de support sont des techniques d'apprentissage supervisé qui permettent de classifier des données de grandes dimensions. Les SVMs sont donc adaptées pour traiter des données telles que les visages.
 Le fonctionnement des SVM est défini en fonction de 2 paramètres : un noyau (*kernel*) et une marge maximale (*soft margin*).
 * Kernel. Cet élément permet de résoudre des problèmes linéairement non séparables. Il semble qu'il n'existe pas de méthode deterministe pour choisir un kernel, cependant il est possible de determiner le bon kernel de manière empirique (cross-validation). 
-Enfin, le kernel peut être configuré en utlisant un paramètre &gamma;. Ce paramètre sera configuré de manière empirique, cependant il est de fournir un ensemble de valeurs croissantes exponentiellement ([doc](https://en.wikibooks.org/wiki/Support_Vector_Machines))
-* Soft Margin. De la même manière que &gamma;, il est conseillé de fournir un ensembles de valeurs croissantes exponentiellement.
+Enfin, le kernel peut être configuré en utilisant un paramètre &gamma;. Ce paramètre sera configuré de manière empirique, cependant il est conseillé de fournir un ensemble de valeurs croissantes exponentiellement ([doc](https://en.wikibooks.org/wiki/Support_Vector_Machines))
+* Soft Margin. De la même manière que &gamma;, il est conseillé de fournir un ensemble de valeurs croissantes exponentiellement.
 
 #### Implémentation
 Voici le code remanié du code original, cela pour plus de clareté
@@ -134,8 +134,8 @@ svc = SVC(kernel=K_param, probability=True)
 clf = GridSearchCV(svc, param_grid)
 clf = clf.fit(X_train_pca, y_train)
 ```
-On voit bien les 3 paramètres caractèristiques d'une SVM apparaitre dans ce code. La librairie sklearn nous premet ensuite de créer un objet SVM et de l'adapter à notre dataset de test.
-En regardant la documentation, on peux voir que les paramètres `G_param` et `C_param` seront séléctionnées par cross-validation. Il est possible de les afficher grâce à `clf.best_params_`.
+On voit bien les 3 paramètres caractéristiques d'une SVM apparaitre dans ce code. La librairie sklearn nous permet ensuite de créer un objet SVM et de l'adapter à notre dataset de test.
+En regardant la documentation, on peut voir que les paramètres `G_param` et `C_param` seront séléctionnés par cross-validation. Il est possible de les afficher grâce à `clf.best_params_`.
 
 Par la suite à fera varier ces paramètres, et notamment `K_param` afin d'étudier le fonctionnement de SVM.
 
@@ -149,7 +149,7 @@ Ce kernel est le plus simple, c'est donc le moins consommateur en ressource.
 | linear | 35               | 150          | 18          | 0.714            | 467      |
 | linear | 35               | 200          | 18          | 0.735            | 601      |
 
-Cependant on remarque que lorsque le kernel linéaire travail avec peu de composantes, les performances sont très largement dégradées.
+On voit que les performances augmentent graduellement avec le nombre de composantes. Cependant on remarque que lorsque le kernel linéaire travaille avec peu de composantes, les performances sont très largement dégradées. 
 
 ##### Polynomial
 
@@ -159,8 +159,8 @@ Cependant on remarque que lorsque le kernel linéaire travail avec peu de compos
 | poly   | 35               | 150          | 18          | 0.378            | 442      |
 | poly   | 35               | 200          | 18          | 0.319            | 854       |
 
-Pour une raison inconue, nous n'arrivons pas à obtenir des resultats probant avec ce noyau. Même en jouant sur 2 facteurs optionnels (`coef0` et `degree`), il nous est impossible de dépasser une précision de 0,7.
-De plus, on remarque que les performances diminuent avec le nombre de filtres appliqués. On peux conclure que ce kernel n'est pas l'option adaptée pour ce cas d'usage.
+Pour une raison inconnue, nous n'arrivons pas à obtenir des résultats probants avec ce noyau. Même en jouant sur 2 facteurs optionnels (`coef0` et `degree`), il nous est impossible de dépasser une précision de 0,5.
+De plus, on remarque que les performances diminuent avec le nombre de filtres appliqués. On peut conclure que ce kernel n'est pas l'option adaptée pour ce cas d'usage.
 
 ##### Radial Basis Function
 
@@ -171,10 +171,10 @@ De plus, on remarque que les performances diminuent avec le nombre de filtres ap
 | rbf    | 35               | 150          | 18          | 0.751            | 342      |
 | rbf    | 35               | 200          | 18          | 0.768            | 506      |
 
-Pour notre cas d'usage on peux voir que c'est le noyau `rbf` qui obtiens les meilleurs performances.
+Pour notre cas d'usage on peut voir que c'est le noyau `rbf` qui obtient les meilleurs performances.
 
 ### Test de validation
-Pour évaluer la pertinence de notre modèle, on utilise une matrice de confusion grâce à la fonction `confusion_matrix`. A noter que la fonction `classification_report` permet d'extraire des métriques plus compactes que la matrice de confusion, mais que toutes les données sont explicités dans la matrice.
+Pour évaluer la pertinence de notre modèle, on utilise une matrice de confusion grâce à la fonction `confusion_matrix`. A noter que la fonction `classification_report` permet d'extraire des métriques plus compactes que la matrice de confusion, mais que toutes les données sont explicitées dans la matrice.
 
 Dans notre cas il est pertinent d'implémenter une courbe ROC et une courbe rappel-précision. 
 
@@ -244,7 +244,7 @@ clf = neigh.fit(X_train_pca, y_train)
 y_pred = clf.predict(X_test_pca)
 print("Average accuracy %0.3f" % accuracy_score(y_test, y_pred))
 ```
-Il est possible de paramétrer l'object `KNeighborsClassifier` avec plusieurs options, notamment avec `n_neighbors` ou `weights` et `algorithm`. Nous allons succéssivement tester ces paramètres afin de retenir la meilleure configuration. 
+Il est possible de paramétrer l'objet `KNeighborsClassifier` avec plusieurs options, notamment avec `n_neighbors` ou `weights` et `algorithm`. Nous allons succéssivement tester ces paramètres afin de retenir la meilleure configuration. 
 
 | n_neighbors | weights  | algorithm |  Average accuracy |
 | ----------- | -------- | --------- | ----------------- |
@@ -258,20 +258,20 @@ Il est possible de paramétrer l'object `KNeighborsClassifier` avec plusieurs op
 | 5           | distance | kd_tree   | 0.573             |
 | 5           | distance | brute     | 0.584             |
 
-Grâce à ce tableau de comparaison on peux voir que la combinaison de paramètres la plus performante est `KNeighborsClassifier(n_neighbors=10, weights='distance', algorithm='ball_tree')`.
+Grâce à ce tableau de comparaison on peut voir que la combinaison de paramètres la plus performante est `KNeighborsClassifier(n_neighbors=10, weights='distance', algorithm='ball_tree')`.
 
 
 ## Classificateur Random Forest
 
 ### Définition
-Afin de bien comprendre l'utilisation de l'algorithme Random Forest, il est nécéssaire de connaitre la notion d'arbre binaire de décision ([doc](#https://perso.univ-rennes1.fr/valerie.monbet/doc/cours/IntroDM/Chapitre6.pdf). En effet, l'algorithme Random Forest utlise un multitude d'arbres binaires de décision pour fonctionner.
+Afin de bien comprendre l'utilisation de l'algorithme Random Forest, il est nécéssaire de connaitre la notion d'arbre binaire de décision ([doc](#https://perso.univ-rennes1.fr/valerie.monbet/doc/cours/IntroDM/Chapitre6.pdf). En effet, l'algorithme Random Forest utilise une multitude d'arbres binaires de décision pour fonctionner.
 
-Ainsi chaque arbre binaire va permettre d'analyser une composante de notre input. En utilisant l'exemple fourni dans l'explication de l'algorithme Nearest Neighbour, on peux assimiler chaque arbre de décision à une colonne du tableau. 
-L'input va donc être soumise à chaque arbre de décision de la forêt, chaque arbre va pouvoir donner une conclusion sur la caractèristique recherchée. En faisant la moyenne des décisions des arbres, l'algorithme va sortir un prédiction sur l'input. 
+Ainsi chaque arbre binaire va permettre d'analyser une composante de notre input. En utilisant l'exemple fourni dans l'explication de l'algorithme Nearest Neighbour, on peut assimiler chaque arbre de décision à une colonne du tableau. 
+L'input va donc être soumise à chaque arbre de décision de la forêt, chaque arbre va pouvoir donner une conclusion sur la caractéristique recherchée. En faisant la moyenne des décisions des arbres, l'algorithme va sortir un prédiction sur l'input. 
 
-De cette explication, on peux extraire 2 paramètres majeurs de ce classificateur :
-* Le nombre d'arbre de décision utilisé : `n_estimators`
-* La taille maximal des arbres de décision : `max_depth`
+De cette explication, on peut extraire 2 paramètres majeurs de ce classificateur :
+* Le nombre d'arbre de décision utilisés : `n_estimators`
+* La taille maximale des arbres de décision : `max_depth`
 
 ### Implémentation
 ```
@@ -294,7 +294,7 @@ Nous allons modifier les 2 paramètres `n_estimators` et `max_depth` afin de det
 | 200          | 15        | 0.459             |
 | 200          | 30        | 0.462             |
 
-On peux voir que la combinaison la plus pertinente dans notre cas d'usage est le suivant : `RandomForestClassifier(n_estimators=100, max_depth=15)`.
+On peut voir que la combinaison la plus pertinente dans notre cas d'usage est le suivant : `RandomForestClassifier(n_estimators=100, max_depth=15)`.
 On remarque que les performances optimales de l'algorithme sont visibles lorsque `n_estimators = n_components`. De plus, la limitation de la profondeur des arbres permet d'éviter la prise de décision parasites.
 
 ## Documentation
