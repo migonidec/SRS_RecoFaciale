@@ -1,5 +1,8 @@
 # SRS Projet de reconnaissance facile
 
+> Ce document a été généré à partir d'un [fichier markdown](https://raw.githubusercontent.com/migonidec/SRS_RecoFaciale/master/README.md) et de l'utilitaire [Grip](https://github.com/joeyespo/grip).
+> Vous pouvez trouver le document original en ligne sur le dêpot GitHub https://github.com/migonidec/SRS_RecoFaciale
+
 Dans le cadre de l'UV SRS à l'IMT Lille Douai (ex-Telecom Lille), nous avons eu l'occasion de nous initier à l'analyse biométrique basée sur l'IA.
 Nous allons utiliser le code fourni par la bibliothèque [scikit-learn](https://scikit-learn.org/stable/auto_examples/applications/plot_face_recognition.html#sphx-glr-auto-examples-applications-plot-face-recognition-py) et nous allons analyser son fonctionnement afin de l'améliorer.
 
