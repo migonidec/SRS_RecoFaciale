@@ -1,3 +1,7 @@
+# Test
+
+[test](randomForest)
+
 # SRS Projet de reconnaissance facile
 
 Dans le cadre de l'UV SRS à l'IMT Lille Douai (ex-Telecom Lille), nous avons eu l'occasion de nous initier à l'analyse biométrique basée sur l'IA.
@@ -10,8 +14,7 @@ Nous allons utiliser le code fourni par la bibliothèque [scikit-learn](https://
 - [x] Variation du kernel SVM
 - [ ] Implementation de courbe ROC
 - [ ] Implementation de courbe rappel-précision
-- [x] Nearest Neighbour 
-- [x] KNN
+- [x] K Nearest Neighbour 
 - [x] Random Forest
 
 ## Index
@@ -21,6 +24,9 @@ Nous allons utiliser le code fourni par la bibliothèque [scikit-learn](https://
 	- [Classificateur](#classificateur)
 		- [Définition de SVM](#définition-de-SVM)
 		- [Implémentation](#implémentation)
+			- [Lineaire](#lineaire)
+			- [Polynomial](#polynomial)
+			- [Radial Basis Function](#radial-basis-function)
 	- [Test de validation](#test-de-validation)
 + **[Classificateur Nearest Neighbour](#classificateur-nearest-neighbour)**	
 	- [Définition](#définition)
