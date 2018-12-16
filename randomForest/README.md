@@ -1,4 +1,4 @@
-# [TEST] SRS Projet de reconnaissance facile
+# SRS Projet de reconnaissance facile
 
 ## Index
 + **[Classificateur Random Forest](#classificateur-random-forest)**	
