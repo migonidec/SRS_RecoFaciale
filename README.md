@@ -1,7 +1,3 @@
-# Test
-
-[test](randomForest)
-
 # SRS Projet de reconnaissance facile
 
 Dans le cadre de l'UV SRS à l'IMT Lille Douai (ex-Telecom Lille), nous avons eu l'occasion de nous initier à l'analyse biométrique basée sur l'IA.
